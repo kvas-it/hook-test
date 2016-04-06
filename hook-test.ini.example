@@ -1,0 +1,11 @@
+[trac]
+url=http://bot:bot@localhost:8000/login/xmlrpc
+components=
+	test-component-1
+	test-component-2
+milestone=test-milestone-1.4
+
+[hook]
+root=/path/to/sitescripts
+script=sitescripts/hg/bin/update_issues.py
+func=hook
