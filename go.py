@@ -25,6 +25,11 @@ hook = 'python:{}/{}:{}'.format(hook_root, hook_script, hook_func)
 hook_env = dict(os.environ)
 hook_env['PYTHONPATH'] = hook_root
 
+
+def poke_trac(message):
+    subprocess.call(['curl', '{}?message={}'.format(trac_url, message)])
+
+
 trac = xmlrpclib.ServerProxy(trac_url)
 timestamp = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime())
 
@@ -76,11 +81,6 @@ for component in trac_components:
                'milestone={3[milestone]}'
                .format(*ticket))
 
-# Poke the Trac server to create a different line in the log so we can
-# see how many XMLRPC calls the hook makes.
-print 'poking', trac_url
-subprocess.call(['curl', trac_url])
-
 
 # Create some commits.
 os.chdir(repo_two)
@@ -104,4 +104,6 @@ commit('Issue 6666 - No such ticket')
 commit('Wrong format of commit message')
 
 # Now push the commits to invoke the hook.
+poke_trac('before-hook')
 hg('push')
+poke_trac('after-hook')
