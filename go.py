@@ -95,7 +95,7 @@ def commit(msg):
 # Touch issue 0 and close 1-4.
 for component in trac_components:
     tickets = component_tickets[component]
-    commit('Issue {0}, Fixes {1}, Fixes {4} - One'.format(*tickets))
+    commit('Issue {0}, Fixes {1}, Issue {2}, Fixes {4} - One'.format(*tickets))
     commit('Fixes {2}, Fixes {3} - Two'.format(*tickets))
     commit('Noissue - Three')
 
