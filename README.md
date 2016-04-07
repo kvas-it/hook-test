@@ -3,10 +3,10 @@
 This is a test setup for mercurial commit hook that integrates
 with Trac issue tracker.
 
-I runs the following scenario:
+It runs the following scenario:
 * Create some tickets with different components, milestones and states,
-* Create some commits that reference those tickets,
-* Push the commits to a repository that has target hook installed for pretxnchangegroup.
+* Create some commits that reference those tickets and a few others that reference no tickets or a non-existent ticket,
+* Push the commits to a repository that has target hook installed for pretxnchangegroup -- this causes the hook to be invoked.
 
 ## Configuration
 
