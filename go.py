@@ -28,6 +28,7 @@ hook_env['PYTHONPATH'] = hook_root
 
 def poke_trac(message):
     subprocess.call(['curl', '{}?message={}'.format(trac_url, message)])
+    print
 
 
 trac = xmlrpclib.ServerProxy(trac_url)
@@ -106,5 +107,12 @@ commit('Issue 2448 - This issue is better than issue 1337')
 
 # Now push the commits to invoke the hook.
 poke_trac('before-hook')
+print
+print '=== Prepared commits ==='
+print
+hg('out')
+print
+print '=== Pushing the commits to activate the hook ==='
+print
 hg('push')
 poke_trac('after-hook')
