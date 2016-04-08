@@ -100,8 +100,9 @@ for component in trac_components:
     commit('Noissue - Three')
 
 # Some invalid commit messages.
-commit('Issue 6666 - No such ticket')
-commit('Wrong format of commit message')
+commit('Issue 6666 - Reference to a non-existent ticket')
+commit('Wrong commit message that kind of fixes 5555')
+commit('Issue 2448 - This issue is better than issue 1337')
 
 # Now push the commits to invoke the hook.
 poke_trac('before-hook')
