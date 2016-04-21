@@ -19,8 +19,12 @@ trac_components = config.get('trac', 'components').split()
 trac_milestone = config.get('trac', 'milestone')
 hook_root = config.get('hook', 'root')
 hook_script = config.get('hook', 'script')
-hook_func = config.get('hook', 'func')
-hook = 'python:{}/{}:{}'.format(hook_root, hook_script, hook_func)
+hooks = {}
+for key, value in config.items('hook'):
+    if key.endswith('-func'):
+        hook_type, _ = key.split('-')
+        hook_spec = 'python:{}/{}:{}'.format(hook_root, hook_script, value)
+        hooks[hook_type] = hook_spec
 
 hook_env = dict(os.environ)
 hook_env['PYTHONPATH'] = hook_root
@@ -51,7 +55,8 @@ os.makedirs(repo_one)
 os.chdir(repo_one)
 hg('init')
 with open(path.join('.hg', 'hgrc'), 'w') as fp:
-    fp.write('[hooks]\npretxnchangegroup = {}\n'.format(hook))
+    hook_options = ['{} = {}'.format(*kv) for kv in hooks.items()]
+    fp.write('[hooks]\n{}\n'.format('\n'.join(hook_options)))
 with open('README.txt', 'w') as fp:
     fp.write('nothing')
 hg('add', 'README.txt')
@@ -93,6 +98,12 @@ def commit(msg):
         fp.write(msg)
     hg('commit', '-m', msg)
 
+# Create the master bookmark and some other bookmark.
+hg('bookmark', 'other')
+commit('Dummy')
+hg('bookmark', 'master')
+hg('push', '-B', 'master', '-B', 'other')
+
 # Touch issue 0 and close 1-4.
 for component in trac_components:
     tickets = component_tickets[component]
@@ -105,6 +116,11 @@ commit('Issue 6666 - Reference to a non-existent ticket')
 commit('Wrong commit message that kind of fixes 5555')
 commit('Issue 2448 - This issue is better than issue 1337')
 
+# A commit on the other branch.
+hg('update', 'other')
+ticket = component_tickets[trac_components[0]][0]
+commit('Fixes {} - This does not fix anything -- wrong branch'.format(ticket))
+
 # Now push the commits to invoke the hook.
 poke_trac('before-hook')
 print
@@ -112,7 +128,8 @@ print '=== Prepared commits ==='
 print
 hg('out')
 print
-print '=== Pushing the commits to activate the hook ==='
+print '=== Press ENTER to push and activate the hook ==='
 print
+raw_input()
 hg('push')
 poke_trac('after-hook')
