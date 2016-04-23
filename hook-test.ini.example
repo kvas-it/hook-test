@@ -8,5 +8,5 @@ milestone=test-milestone-1.4
 [hook]
 root=/path/to/sitescripts
 script=sitescripts/hg/bin/update_issues.py
-pretxnchangegroup-func=hook
-pushkey-func=pushkey
+pretxnchangegroup-func=changegroup_hook
+pushkey-func=pushkey_hook
